@@ -1,0 +1,6 @@
+{
+    "require": {
+        "devneet/rune": "dev-main",
+        "hexydec/jslite": "^1.0"
+    }
+}

@@ -1,0 +1,107 @@
+<?php
+/**
+ * Act. 1 - Understanding Its Flow  
+ * THE AWAKENING ✦
+ * 
+ * From the silence of nothingness, echoes rise from the void.
+ * A journey begins — with runes at your side.
+ * 
+ * Run this script using:
+ *   $ php {file}
+ *   $ php {file} grimoire
+ */
+require_once __DIR__ . '/vendor/autoload.php';
+
+
+
+/**
+ * I N V O C A T I O N
+ * 
+ * Step 1 — Summon the runes:  
+ * Import each module's manifest.
+ * 
+ * Step 2 — Channel the energy:  
+ * Initialize ether, essence, and entity.
+ * 
+ * Note: Keep #sentinel markers if you're using Sentinel support.
+ */
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Crafter\Manifest as Crafter;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Specter\Manifest as Specter;
+#sentinel-manifest
+
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Crafter::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
+#sentinel-awaken
+
+
+
+/**
+ * I N C A N T A T I O N
+ * 
+ * This is your working space.  
+ * Use begin() and end() to define the active logic scope.
+ */
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+// ✦ Main logic lives here
+
+use hexydec\jslite\jslite;
+
+Chanter::cast('build', function() {
+  Crafter::item('exura', function() {
+    Crafter::seed('DIST', __DIR__ . '/dist/exura.js');
+    Crafter::seed('TYPE', 'plain');
+    Crafter::seed('LANGUAGE', ['js']);
+
+    Crafter::shard('src/root.js');
+    Crafter::shard('src/dom.js');
+    Crafter::shard('src/store.js');
+    Crafter::shard('src/state.js');
+    Crafter::shard('src/main.js');
+  });
+
+  Crafter::spark('exura', function() {
+    global $CRAFTER_SPARK_DISTRIBUTE;
+
+    $source = $CRAFTER_SPARK_DISTRIBUTE;
+    $source = str_replace("\n\n", "\n", $source);
+    
+    if (Chanter::spell('min') == 'true') {
+      $min = new jslite();
+      $min->load($source);
+      $min->minify();
+      $minified = $min->compile();
+      Forger::item('dist/exura.min.js', $minified);
+    }
+
+    $CRAFTER_SPARK_DISTRIBUTE = $source;
+  });
+});
+
+Chanter::cast('watch', function() {
+  Chanter::cast('build')();
+  Specter::observer('src', function() {
+    Chanter::cast('build')();
+  });
+});
+
+#sentinel-codex
+Keeper::end();
+Chanter::end();
+Aether::end();

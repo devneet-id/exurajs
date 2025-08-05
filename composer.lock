@@ -1,0 +1,176 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "c8c9015454f3f7867171b39b068a8b0a",
+    "packages": [
+        {
+            "name": "devneet/rune",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devneet-id/rune.git",
+                "reference": "f578bff4ae743c8ab87f8cda70ec78002f823b7f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devneet-id/rune/zipball/f578bff4ae743c8ab87f8cda70ec78002f823b7f",
+                "reference": "f578bff4ae743c8ab87f8cda70ec78002f823b7f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rune\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "AnwarAchilles",
+                    "email": "hudorianwar07@gmail.com"
+                },
+                {
+                    "name": "DEVNEET Team",
+                    "email": "opensource@devneet.org"
+                }
+            ],
+            "description": "Rune is a lore-driven, modular concept beneath PHP, designed not to dictate development — but to respond to it.",
+            "support": {
+                "issues": "https://github.com/devneet/rune/issues",
+                "source": "https://github.com/devneet/rune"
+            },
+            "time": "2025-08-03T05:43:56+00:00"
+        },
+        {
+            "name": "hexydec/jslite",
+            "version": "1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hexydec/jslite.git",
+                "reference": "c480981002591c7cde13eea9547a204723953055"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hexydec/jslite/zipball/c480981002591c7cde13eea9547a204723953055",
+                "reference": "c480981002591c7cde13eea9547a204723953055",
+                "shasum": ""
+            },
+            "require": {
+                "hexydec/tokenise": "1.0.3",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Will Earp",
+                    "email": "will@hexydec.com",
+                    "homepage": "https://github.com/hexydec"
+                }
+            ],
+            "description": "A token based Javascript parser/minifier designed for compressing inline scripts on the fly, written in PHP",
+            "homepage": "https://github.com/hexydec/jslite",
+            "keywords": [
+                "JS",
+                "compiler",
+                "javascript",
+                "minifier",
+                "minify",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/hexydec/jslite/issues",
+                "source": "https://github.com/hexydec/jslite/tree/1.0.6"
+            },
+            "time": "2025-07-15T21:30:06+00:00"
+        },
+        {
+            "name": "hexydec/tokenise",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hexydec/tokenise.git",
+                "reference": "39e8f98ebb420dbfeb3bf0e41fbaf1cc1c3eef50"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hexydec/tokenise/zipball/39e8f98ebb420dbfeb3bf0e41fbaf1cc1c3eef50",
+                "reference": "39e8f98ebb420dbfeb3bf0e41fbaf1cc1c3eef50",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.12",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Will Earp",
+                    "email": "will@hexydec.com",
+                    "homepage": "https://github.com/hexydec"
+                }
+            ],
+            "description": "A program for performing lexical analysis, written in PHP",
+            "homepage": "https://github.com/hexydec/tokenise",
+            "keywords": [
+                "lexical",
+                "lexing",
+                "parser",
+                "tokenisation",
+                "tokeniser",
+                "tokenization",
+                "tokenizer"
+            ],
+            "support": {
+                "issues": "https://github.com/hexydec/tokenise/issues",
+                "source": "https://github.com/hexydec/tokenise/tree/1.0.3"
+            },
+            "time": "2025-07-15T16:08:27+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "devneet/rune": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}
