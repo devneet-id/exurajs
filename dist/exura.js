@@ -203,7 +203,6 @@ class Exura {
       ExuraEnvironment.store.get(ID),
       ExuraEnvironment.state.get(ID),
       ExuraEnvironment.effect.get(ID),
-      ExuraEnvironment.watch.get(ID),
       ExuraEnvironment.render.get(ID),
     ];
   }
