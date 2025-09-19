@@ -20,6 +20,11 @@ Inspired by reactive design patterns, Exura focuses on clarity, modularity, and 
 - 🛣️ **Built-in Router**  
   Declare routes and render per path using `router(path, callback)`.
 
+## CDN
+```html
+<script src="https://raw.githubusercontent.com/devneet-id/exurajs/main/dist/exura.js"></script>
+```
+
 ## 🔍 Example
 
 ```js
