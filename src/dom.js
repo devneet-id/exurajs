@@ -1,6 +1,7 @@
 class ExuraDom {
  
   constructor(selector = 'body') {
+    this.selector = selector;
     this.target = typeof selector === 'string' ? document.querySelector(selector) : selector;
     return new Proxy(this, {
       get(target, prop) {
@@ -51,5 +52,9 @@ class ExuraDom {
   on(event, callback) {
     this.target.addEventListener(event, callback);
     return this;
+  }
+
+  clear() {
+    this.target.innerHTML = '';
   }
 }

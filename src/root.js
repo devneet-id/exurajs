@@ -7,7 +7,7 @@
 class ExuraEnvironment {
 
   static configure = new Map([
-    ['version', '1.0'],
+    ['version', '1.1'],
     ['mode', 'production'],
     ['url', `${window.location.protocol}//${window.location.host}/`],
   ]);

@@ -8,7 +8,7 @@
 class ExuraEnvironment {
 
   static configure = new Map([
-    ['version', '1.0'],
+    ['version', '1.1'],
     ['mode', 'production'],
     ['url', `${window.location.protocol}//${window.location.host}/`],
   ]);
@@ -29,6 +29,7 @@ class ExuraEnvironment {
 class ExuraDom {
  
   constructor(selector = 'body') {
+    this.selector = selector;
     this.target = typeof selector === 'string' ? document.querySelector(selector) : selector;
     return new Proxy(this, {
       get(target, prop) {
@@ -80,6 +81,10 @@ class ExuraDom {
     this.target.addEventListener(event, callback);
     return this;
   }
+
+  clear() {
+    this.target.innerHTML = '';
+  }
 }
 class ExuraStore extends Map {
   constructor(entries) {
@@ -125,32 +130,7 @@ class ExuraState extends Map {
 }
 class Exura {
 
-  // static environment( environment = {} ) {
-  //   // rebase
-  //   if (environment.configure) {
-  //     Exura._configure = new Map([...Exura._configure, ...Object.entries(environment.configure)]);
-  //   }
-  //   if (environment._store) {
-  //     Exura._store = new Map([...Exura._store, ...Object.entries(environment.store)]);
-  //   }
-  //   // Load Service
-  //   Object.entries(Exura._service).forEach(([name, fn]) => {
-  //     if (typeof window[name] === 'function') {
-  //       console.log(`EXURA - Service:: ${name}() Already Exists`);
-  //     } else {
-  //       window[name] = fn;
-  //     }
-  //   });
-  //   // globalize
-  //   window['Exura'] = this;
-  //   // copyright
-  //   console.clear();
-  //   console.debug(`E X U R A  - ${Exura._configure.get('version')} //////`);
-  // }
-
-  static environment( env) {
-
-  }
+  static environment( env ) {}
 
   static module( fn ) {
     const ID = fn.name;
@@ -164,7 +144,9 @@ class Exura {
     if (document.querySelectorAll(`exura-${ID}`).length > 0) {
       const element = document.querySelector(`exura-${ID}`);
       ExuraEnvironment.render.set(ID, element);
-      ExuraEnvironment.boiler.set(ID, element.innerHTML);
+      if (!ExuraEnvironment.boiler.has(ID)) {
+        ExuraEnvironment.boiler.set(ID, element.innerHTML);
+      }
       // fn.element = element;
       fn.dom = Exura.dom(`exura-${ID}`);
       fn.render = ( reBioler ) => {
@@ -198,13 +180,17 @@ class Exura {
   }
 
   static load( ID ) {
-    return [
-      ExuraEnvironment.module.get(ID),
-      ExuraEnvironment.store.get(ID),
-      ExuraEnvironment.state.get(ID),
-      ExuraEnvironment.effect.get(ID),
-      ExuraEnvironment.render.get(ID),
-    ];
+    if (ID) {
+      return [
+        ExuraEnvironment.module.get(ID),
+        ExuraEnvironment.store.get(ID),
+        ExuraEnvironment.state.get(ID),
+        ExuraEnvironment.effect.get(ID),
+        ExuraEnvironment.render.get(ID),
+      ];
+    }else {
+      return ExuraEnvironment.module;
+    }
   }
 
   static store(ID, data) {
@@ -291,14 +277,28 @@ class Exura {
   }
 
 
-  static router(endpoint, fn, element = 'route') {
-    const el = document.querySelector(`exura-${element}`);
-    if (!el) return;
+  static router(endpoint, fn) {
+    const path = location.pathname;
 
-    if (location.pathname === endpoint && typeof fn === 'function') {
-      fn(el);
+    const keys = [];
+    const pattern = endpoint.replace(/:([^/]+)/g, (_, key) => {
+      keys.push(key);
+      return "([^/]+)";
+    });
+    const regex = new RegExp("^" + pattern + "$");
+
+    const match = path.match(regex);
+
+    if (match && typeof fn === 'function') {
+      const params = {};
+      keys.forEach((k, i) => {
+        params[k] = match[i + 1];
+      });
+
+      fn(params);
     }
   }
+
 
 
   static watch(element, fn, options = {}) {
@@ -319,6 +319,9 @@ class Exura {
   }
 
   static dom(selector) {
+    if (document.querySelector(`exura-${selector}`)) {
+      selector = `exura-${selector}`;
+    }
     return new ExuraDom(selector);
   }
 

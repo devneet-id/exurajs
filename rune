@@ -92,6 +92,8 @@ Chanter::cast('build', function() {
 
     $CRAFTER_SPARK_DISTRIBUTE = $source;
   });
+
+  copy(__DIR__.'/dist/exura.js', __DIR__.'/../../dev/js/exura.js');
 });
 
 Chanter::cast('watch', function() {
