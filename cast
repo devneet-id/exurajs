@@ -96,14 +96,14 @@ Chanter::cast('build', function() {
     $CRAFTER_SPARK_DISTRIBUTE = $source;
   });
 
-});
+}, 'Build dist (--min=true: + .min)');
 
 Chanter::cast('watch', function() {
   Chanter::cast('build')();
   Specter::observer('src', function() {
     Chanter::cast('build')();
   });
-});
+}, 'Build, then rebuild on src/ change');
 
 /**
  * V E R S I O N
@@ -147,7 +147,7 @@ Chanter::cast('version --up --pre --set', function() {
   file_put_contents(__FILE__, $runite);
   Whisper::echo("{{color-success}}{{icon-success}} EXURA JS " . VERSION . " -> $next{{nl}}");
   Whisper::echo("{{color-secondary}}Rebuild: php cast build --min=true{{nl}}");
-}, 'Show or bump const VERSION (woven into src/ on build). --up=patch|minor|major|release --pre[=dev] --set=x.y.z');
+}, 'Show or bump the runite VERSION');
 
 #sentinel-codex
 Keeper::end();
