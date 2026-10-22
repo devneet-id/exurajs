@@ -12,8 +12,6 @@
  */
 require_once __DIR__ . '/vendor/autoload.php';
 
-
-
 /**
  * I N V O C A T I O N
  * 
@@ -47,8 +45,6 @@ Keeper::ether()::essence()::entity();
 Specter::ether()::essence()::entity();
 #sentinel-awaken
 
-
-
 /**
  * I N C A N T A T I O N
  * 
@@ -60,6 +56,8 @@ Chanter::begin();
 Keeper::begin();
 
 // ✦ Main logic lives here
+
+const VERSION = '1.1.0';
 
 use hexydec\jslite\jslite;
 
@@ -80,6 +78,7 @@ Chanter::cast('build', function() {
     global $CRAFTER_SPARK_DISTRIBUTE;
 
     $source = $CRAFTER_SPARK_DISTRIBUTE;
+    $source = Weaver::bind($source, 'VERSION', VERSION);
     $source = str_replace("\n\n", "\n", $source);
     
     if (Chanter::spell('min') == 'true') {
@@ -93,15 +92,51 @@ Chanter::cast('build', function() {
     $CRAFTER_SPARK_DISTRIBUTE = $source;
   });
 
-  copy(__DIR__.'/dist/exura.js', __DIR__.'/../../dev/js/exura.js');
-});
+}, 'Build dist (--min=true: + .min)');
 
-Chanter::cast('watch', function() {
-  Chanter::cast('build')();
-  Specter::observer('src', function() {
-    Chanter::cast('build')();
-  });
-});
+/**
+ * V E R S I O N
+ * The version lives in `const VERSION` (this runite edits itself);
+ * build weaves it into every {{ VERSION }} of src/.
+ *   php cast version                  show
+ *   php cast version --up[=minor|major|release]
+ *   php cast version --pre[=dev]
+ *   php cast version --set=1.0.0-dev
+ */
+Chanter::cast('version --up --pre --set', function() {
+  $next = VERSION;
+  if (($set = Chanter::spell('set')) && $set !== '1') {
+    $next = $set;
+  }
+  if ($up = Chanter::spell('up')) {
+    preg_match('/^(\d+)\.(\d+)\.(\d+)/', $next, $v);
+    $next = match ($up === '1' ? 'patch' : $up) {
+      'major'   => ($v[1] + 1) . '.0.0',
+      'minor'   => $v[1] . '.' . ($v[2] + 1) . '.0',
+      'patch'   => $v[1] . '.' . $v[2] . '.' . ($v[3] + 1),
+      'release' => $v[0],
+      default   => false,
+    };
+  }
+  if ($next && ($pre = Chanter::spell('pre'))) {
+    $next = preg_replace('/-.*$/', '', $next) . '-' . ($pre === '1' ? 'dev' : $pre);
+  }
+
+  if ($next === VERSION) {
+    Whisper::echo("{{color-info}}EXURA JS{{color-end}} " . VERSION . "{{nl}}");
+    return;
+  }
+  if (!$next || !preg_match('/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/', $next)) {
+    Whisper::echo("{{color-danger}}{{icon-warning}} Invalid version. Use --up=patch|minor|major|release, --pre[=dev] or --set=x.y.z{{nl}}");
+    return;
+  }
+
+  $runite = file_get_contents(__FILE__);
+  $runite = preg_replace("/(const VERSION = ')[^']*(')/", '${1}' . $next . '${2}', $runite, 1);
+  file_put_contents(__FILE__, $runite);
+  Whisper::echo("{{color-success}}{{icon-success}} EXURA JS " . VERSION . " -> $next{{nl}}");
+  Whisper::echo("{{color-secondary}}Rebuild: php cast build --min=true{{nl}}");
+}, 'Show or bump the runite VERSION');
 
 #sentinel-codex
 Keeper::end();
