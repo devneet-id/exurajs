@@ -1,5 +1,5 @@
 /* 
- * E X U R A
+ * E X U R A - {{ VERSION }}
  * 
  * created by | Anwar Achilles
  * 
@@ -7,7 +7,7 @@
 class ExuraEnvironment {
 
   static configure = new Map([
-    ['version', '1.1'],
+    ['version', '{{ VERSION }}'],
     ['mode', 'production'],
     ['url', `${window.location.protocol}//${window.location.host}/`],
   ]);

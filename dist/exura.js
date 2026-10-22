@@ -1,6 +1,6 @@
 /* RUNE 1.11 | Created By @anwarachilles */
 /* 
- * E X U R A
+ * E X U R A - 1.1.0
  * 
  * created by | Anwar Achilles
  * 
@@ -8,7 +8,7 @@
 class ExuraEnvironment {
 
   static configure = new Map([
-    ['version', '1.1'],
+    ['version', '1.1.0'],
     ['mode', 'production'],
     ['url', `${window.location.protocol}//${window.location.host}/`],
   ]);
