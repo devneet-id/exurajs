@@ -1,69 +1,64 @@
 # E X U R A . J S
 
-**Exura.js** is a minimalist JavaScript micro-framework built to simplify modern frontend development.  
-Inspired by reactive design patterns, Exura focuses on clarity, modularity, and control — without the bulk of large frameworks.
+**Exura.js** is a reactive JavaScript micro-framework: modules, state, effects and rendering — without the bulk of large frameworks.
+Part of the **Exura series** — the power of a modern reactive framework in a single, super-light script.
 
 ## ✨ Key Features
 
-- ⚙️ **Modular Architecture**  
-  Build isolated apps using `Exura.module()` to keep your logic clean and scoped.
+- ⚙️ **Modules** — `Exura.module(function name() {…})` registers a module; the `<exura-name>` tag is its view and `name()` runs it.
+- 🧠 **Reactive state** — `state.set()` triggers `effect(fn, deps)` when one of its dependencies changes.
+- 🗃️ **Store** — static data for a module; merged with state when rendering.
+- 🎯 **Templates** — the content of `<exura-name>` is the template; `{{key}}` works in text and in attributes.
+- 👁️ **Lazy watch** — `watch(selector, fn)` runs once an element enters the viewport.
+- 🛣️ **Router** — `router('/user/:id', fn)` matches the current path and passes params.
 
-- 🧠 **Reactive State System**  
-  Define and react to changes using `state.set()` and `effect()` — no boilerplate needed.
+## 📦 Install
 
-- 🎯 **Auto Rendering**  
-  Bind state to the DOM using `{{expression}}` syntax inside `render()` templates.
-
-- 👁️ **Lazy DOM Observing**  
-  Trigger actions only when an element enters the viewport with `watch(selector, callback)`.
-
-- 🛣️ **Built-in Router**  
-  Declare routes and render per path using `router(path, callback)`.
-
-## CDN
 ```html
-<script src="https://raw.githubusercontent.com/devneet-id/exurajs/main/dist/exura.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/devneet-id/exurajs@1.x/dist/exura.min.js"></script>
 ```
 
 ## 🔍 Example
 
-```js
-Exura.module(function app1() {
-  const { state, render, effect, watch, router } = app1;
+```html
+<exura-counter>
+  <h2>Hello 👋 Count: {{count}}</h2>
+  <button onclick="counter.state.set('count', counter.state.get('count') + 1)">Increment</button>
+</exura-counter>
 
-  state.set('count', 0);
+<script>
+  Exura.module(function counter() {
+    const { state, effect, render } = counter;
 
-  effect(() => {
-    render(`
-      <h2>Hello 👋 Count: {{count}}</h2>
-      <button onclick="app1.state.set('count', app1.state.get('count') + 1)">
-        Increment
-      </button>
-    `);
-  }, ['count']);
-
-  watch("#observe-me", () => {
-    alert("Element is now visible!");
+    state.set('count', 0);
+    effect(() => render(), ['count']);
   });
 
-  router("/", () => render());
-});
+  counter(); // a module is registered first, then run when you call it
+</script>
 ```
 
-Simple, reactive, and powerful — that’s the Exura.js way.
-Perfect for developers who love clean code, full control, and zero bloat ✨
+More: `store.set(key, value)`, `watch('#el', fn)`, `router('/post/:id', ({ id }) => …)`, `Exura.dom(selector)`.
 
+## 🧩 The Exura Series
 
+Exura mirrors a modern CSS / JS / PHP framework — at a fraction of the weight, without losing the abilities of a framework.
 
-## 🛠️ BUILD WITH RUNE
+| Package | Focus | Repository |
+|---|---|---|
+| **exuracss** | modern semantic styling | [devneet-id/exuracss](https://github.com/devneet-id/exuracss) |
+| **exurajs** | modern reactive JavaScript | [devneet-id/exurajs](https://github.com/devneet-id/exurajs) |
+| **exuraphp** | modern HTTP API endpoints | [devneet-id/exuraphp](https://github.com/devneet-id/exuraphp) |
 
-**Exura** uses the **Rune** build engine.  
-Before getting started, we recommend reading the official documentation here:  
+## 🛠️ Shaped with Rune
+
+This project is shaped with **Rune** — a lore-driven, modular concept beneath PHP that responds to development rather than dictating it.  
+Its runite, `cast`, holds the casts that turn `src/` into `dist/`.  
 👉 <https://github.com/devneet-id/rune>
 
-Although in most cases you can simply run the available `build` commands, understanding the **Rune structure** will help you better track and manage post-processing tasks more efficiently.
+You can simply run the casts below; knowing how a runite works helps when you want to shape your own.
 
-Requirements, Make sure you have:
+Requirements:
 - **Composer** installed
 - **PHP version 8.1+**
 
@@ -92,15 +87,13 @@ php cast version --pre           # 1.0.1 -> 1.0.1-dev  (--pre=beta.1)
 php cast version --set=1.0.0
 ```
 
+## 🎯 Goal
 
-## 🎯 G O A L
-Exura will:
-- Be fully integrated with **Rune** as its built-in build engine.
+Exura.js will:
 
-- Feature a custom **preprocessing system**, inspired by JSX — but built natively into Rune’s environment.
-
-- Embrace **all aspects of modern JavaScript**, including API design, reactive patterns, modular structure, and future-facing concepts.
-
-- Stay committed to **never slowing down or interfering** with the developer's workflow.
+- Grow its **reactivity** — several effects per module, safe rendering by default and list rendering in templates.
+- Offer a **template preprocessor** inspired by JSX, shaped through a Rune cast.
+- Stay **one small file** that works with a single `<script>` tag — no build step for the user.
+- Never slow down or interfere with the developer's workflow.
 
 Exura.js is here to assist — not to intrude.
