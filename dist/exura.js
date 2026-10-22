@@ -109,18 +109,19 @@ class ExuraState extends Map {
     super.set(key, value);
 
     if (changed) {
-      const eff = ExuraEnvironment.effect.get(this.ID);
-      if (eff) {
-        const { deps, lastValues, effect } = eff;
+      const effects = ExuraEnvironment.effect.get(this.ID) || [];
+      for (const record of effects) {
+        if (record.deps === null) {
+          Exura.trigger(record);
+          continue;
+        }
+        if (!record.deps.includes(key)) continue;
 
-        if (deps.includes(key)) {
-          const currVals = deps.map(dep => this.get(dep));
-          const depChanged = !lastValues || !currVals.every((v, i) => v === lastValues[i]);
-
-          if (depChanged && typeof effect === "function") {
-            eff.lastValues = currVals;
-            effect(); // 💥 Trigger effect
-          }
+        const currVals = record.deps.map(dep => this.get(dep));
+        const depChanged = !currVals.every((v, i) => v === record.lastValues[i]);
+        if (depChanged) {
+          record.lastValues = currVals;
+          Exura.trigger(record);
         }
       }
     }
@@ -130,6 +131,7 @@ class ExuraState extends Map {
 }
 class Exura {
 
+  // reserved for environment options (mode, url)
   static environment( env ) {}
 
   static module( fn ) {
@@ -149,8 +151,8 @@ class Exura {
       }
       // fn.element = element;
       fn.dom = Exura.dom(`exura-${ID}`);
-      fn.render = ( reBioler ) => {
-        Exura.render(ID, reBioler);
+      fn.render = ( reBoiler ) => {
+        Exura.render(ID, reBoiler);
       };
     }else {
       fn.dom = false;
@@ -166,7 +168,12 @@ class Exura {
 
     // watch
     fn.watch = (target, fn2) => {
-      Exura.watch(fn.dom.find(target).target, fn2);
+      const found = fn.dom ? fn.dom.find(target) : null;
+      if (!found) {
+        console.warn(`Component ${ID}: watch target ${target} not found`);
+        return;
+      }
+      Exura.watch(found.target, fn2);
     };
 
     // router
@@ -195,7 +202,7 @@ class Exura {
 
   static store(ID, data) {
     if (!ExuraEnvironment.store.has(ID)) {
-      // Kasih default kosong kalo belum ada
+      // create an empty store on first use
       ExuraEnvironment.store.set(ID, new ExuraStore());
     }
 
@@ -211,9 +218,19 @@ class Exura {
   }
 
 
-  static render(ID, reBioler = null) {
-    if (reBioler !== null) {
-      ExuraEnvironment.boiler.set(ID, reBioler);
+  static escape(value) {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  // {{key}} is escaped, {{{key}}} is inserted as raw HTML
+  static render(ID, reBoiler = null) {
+    if (reBoiler !== null) {
+      ExuraEnvironment.boiler.set(ID, reBoiler);
     }
 
     let boiler = ExuraEnvironment.boiler.get(ID);
@@ -227,7 +244,8 @@ class Exura {
     ]);
 
     for (let [key, value] of data) {
-      boiler = boiler.replaceAll(`{{${key}}}`, value);
+      boiler = boiler.replaceAll(`{{{${key}}}}`, value);
+      boiler = boiler.replaceAll(`{{${key}}}`, Exura.escape(value));
     }
 
     render.innerHTML = boiler;
@@ -249,31 +267,32 @@ class Exura {
     return store;
   }
 
+  // a module may hold many effects; deps = null runs on every state change
   static effect(ID, effectFn, deps = null) {
     const state = ExuraEnvironment.state.get(ID) || new ExuraState(ID);
     ExuraEnvironment.state.set(ID, state);
 
-    const effectData = ExuraEnvironment.effect.get(ID) || {
-      deps: null,
-      lastValues: [],
-      effect: () => {},
+    const effects = ExuraEnvironment.effect.get(ID) || [];
+    const record = {
+      deps,
+      lastValues: deps ? deps.map(dep => state.get(dep)) : [],
+      effect: effectFn,
+      running: false,
     };
+    effects.push(record);
+    ExuraEnvironment.effect.set(ID, effects);
 
-    const shouldRun = (() => {
-      if (deps === null) return true;
-      if (deps.length === 0 && !effectData.lastValues.length) return true;
+    Exura.trigger(record);
+  }
 
-      const currValues = deps.map(dep => state.get(dep));
-      const changed = currValues.some((val, i) => val !== effectData.lastValues[i]);
-      effectData.lastValues = currValues;
-      return changed;
-    })();
-
-    effectData.deps = deps;
-    effectData.effect = effectFn;
-    ExuraEnvironment.effect.set(ID, effectData);
-
-    if (shouldRun) effectFn();
+  static trigger(record) {
+    if (record.running || typeof record.effect !== 'function') return;
+    record.running = true;
+    try {
+      record.effect();
+    } finally {
+      record.running = false;
+    }
   }
 
 
@@ -309,7 +328,7 @@ class Exura {
         if (entry.isIntersecting) {
           fn(entry);
           if (once) {
-            observer.unobserve(entry.target); // 🔥 auto stop kalo once true
+            observer.unobserve(entry.target); // stop after the first hit when once is true
           }
         }
       });
