@@ -65,7 +65,7 @@ Although in most cases you can simply run the available `build` commands, unders
 
 Requirements, Make sure you have:
 - **Composer** installed
-- **PHP version 8+**
+- **PHP version 8.1+**
 
 Then run this command:
 
@@ -73,22 +73,24 @@ Then run this command:
 composer install
 ```
 
-To view the main rune script:
+The runite of this project is `cast`. To view its main screen (all casts with notes):
 ```shell
-php rune
+php cast
 ```
 
 To build the project:
 ```shell
-php rune build
-php rune build --min=true
+php cast build
+php cast build --min=true
 ```
 
-Development mode (auto watch & build on changes):
+Version (stored in the runite itself as `const VERSION`, applied on build):
 ```shell
-php rune watch
+php cast version
+php cast version --up            # 1.0.0 -> 1.0.1  (--up=minor | major | release)
+php cast version --pre           # 1.0.1 -> 1.0.1-dev  (--pre=beta.1)
+php cast version --set=1.0.0
 ```
-
 
 
 ## 🎯 G O A L

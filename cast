@@ -12,8 +12,6 @@
  */
 require_once __DIR__ . '/vendor/autoload.php';
 
-
-
 /**
  * I N V O C A T I O N
  * 
@@ -46,8 +44,6 @@ Crafter::ether()::essence()::entity();
 Keeper::ether()::essence()::entity();
 Specter::ether()::essence()::entity();
 #sentinel-awaken
-
-
 
 /**
  * I N C A N T A T I O N
@@ -97,13 +93,6 @@ Chanter::cast('build', function() {
   });
 
 }, 'Build dist (--min=true: + .min)');
-
-Chanter::cast('watch', function() {
-  Chanter::cast('build')();
-  Specter::observer('src', function() {
-    Chanter::cast('build')();
-  });
-}, 'Build, then rebuild on src/ change');
 
 /**
  * V E R S I O N
