@@ -6,9 +6,9 @@ Part of the **Exura series** — the power of a modern reactive framework in a s
 ## ✨ Key Features
 
 - ⚙️ **Modules** — `Exura.module(function name() {…})` registers a module; the `<exura-name>` tag is its view and `name()` runs it.
-- 🧠 **Reactive state** — `state.set()` triggers `effect(fn, deps)` when one of its dependencies changes.
+- 🧠 **Reactive state** — `state.set()` triggers every `effect(fn, deps)` whose dependencies changed; an effect without deps runs on every change.
 - 🗃️ **Store** — static data for a module; merged with state when rendering.
-- 🎯 **Templates** — the content of `<exura-name>` is the template; `{{key}}` works in text and in attributes.
+- 🎯 **Templates** — the content of `<exura-name>` is the template; `{{key}}` is HTML-escaped, `{{{key}}}` inserts raw HTML; both work in text and in attributes.
 - 👁️ **Lazy watch** — `watch(selector, fn)` runs once an element enters the viewport.
 - 🛣️ **Router** — `router('/user/:id', fn)` matches the current path and passes params.
 
@@ -91,7 +91,7 @@ php cast version --set=1.0.0
 
 Exura.js will:
 
-- Grow its **reactivity** — several effects per module, safe rendering by default and list rendering in templates.
+- Grow its **reactivity** — list rendering and expressions in templates.
 - Offer a **template preprocessor** inspired by JSX, shaped through a Rune cast.
 - Stay **one small file** that works with a single `<script>` tag — no build step for the user.
 - Never slow down or interfere with the developer's workflow.
