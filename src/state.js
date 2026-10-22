@@ -11,18 +11,19 @@ class ExuraState extends Map {
     super.set(key, value);
 
     if (changed) {
-      const eff = ExuraEnvironment.effect.get(this.ID);
-      if (eff) {
-        const { deps, lastValues, effect } = eff;
+      const effects = ExuraEnvironment.effect.get(this.ID) || [];
+      for (const record of effects) {
+        if (record.deps === null) {
+          Exura.trigger(record);
+          continue;
+        }
+        if (!record.deps.includes(key)) continue;
 
-        if (deps.includes(key)) {
-          const currVals = deps.map(dep => this.get(dep));
-          const depChanged = !lastValues || !currVals.every((v, i) => v === lastValues[i]);
-
-          if (depChanged && typeof effect === "function") {
-            eff.lastValues = currVals;
-            effect(); // 💥 Trigger effect
-          }
+        const currVals = record.deps.map(dep => this.get(dep));
+        const depChanged = !currVals.every((v, i) => v === record.lastValues[i]);
+        if (depChanged) {
+          record.lastValues = currVals;
+          Exura.trigger(record);
         }
       }
     }
