@@ -2,11 +2,60 @@
 
 class Exura {
 
-  // reserved for environment options (mode, url)
-  static environment( env ) {}
+  // rebase the settings: Exura.configure({ mode: 'production', onError: fn })
+  static configure( options = {} ) {
+    for (const [key, value] of Object.entries(options)) {
+      ExuraEnvironment.configure.set(key, value);
+    }
+    return ExuraEnvironment.configure;
+  }
+
+  // the old name of configure(), kept so existing calls keep working
+  static environment( options = {} ) {
+    return Exura.configure(options);
+  }
+
+  static production() {
+    return ExuraEnvironment.configure.get('mode') === 'production';
+  }
+
+  // development output: a banner once, then each note; production says nothing
+  static notice( type, text ) {
+    if (Exura.production()) return;
+    if (!ExuraEnvironment.banner) {
+      ExuraEnvironment.banner = true;
+      console.debug(`E X U R A - ${ExuraEnvironment.configure.get('version')} ////// development`);
+    }
+    if (text !== undefined) console[type](`EXURA · ${text}`);
+  }
+
+  // production: an error goes to onError (when set) and never reaches the console
+  static report( error ) {
+    const onError = ExuraEnvironment.configure.get('onError');
+    if (typeof onError === 'function') {
+      try { onError(error); } catch (e) {}
+    }
+  }
+
+  // run a callback of a module; in production its error is caught and reported
+  static guard( fn, ...args ) {
+    if (!Exura.production()) return fn(...args);
+    try {
+      return fn(...args);
+    } catch (error) {
+      Exura.report(error);
+    }
+  }
 
   static module( fn ) {
     const ID = fn.name;
+
+    // tracking: a clashing name replaces what was there
+    if (ExuraEnvironment.module.has(ID)) {
+      Exura.notice('warn', `module ${ID}() already exists — the new one replaces it`);
+    } else if (ID in window) {
+      Exura.notice('warn', `window.${ID} already exists — module ${ID}() replaces it`);
+    }
 
     // store
     fn.store = Exura.store(ID, {});
@@ -28,7 +77,7 @@ class Exura {
     }else {
       fn.dom = false;
       fn.render = () => {
-        console.warn(`Component ${ID} Element Not Found`);
+        Exura.notice('warn', `${ID}(): <exura-${ID}> not found, render() does nothing`);
       };
     }
     
@@ -41,7 +90,7 @@ class Exura {
     fn.watch = (target, fn2) => {
       const found = fn.dom ? fn.dom.find(target) : null;
       if (!found) {
-        console.warn(`Component ${ID}: watch target ${target} not found`);
+        Exura.notice('warn', `${ID}(): watch target ${target} not found`);
         return;
       }
       Exura.watch(found.target, fn2);
@@ -55,6 +104,7 @@ class Exura {
     // moduleing
     ExuraEnvironment.module.set(ID, fn);
     window[ID] = ExuraEnvironment.module.get(ID);
+    Exura.notice('log', `module ${ID}() ✓`);
   }
 
   static load( ID ) {
@@ -160,7 +210,7 @@ class Exura {
     if (record.running || typeof record.effect !== 'function') return;
     record.running = true;
     try {
-      record.effect();
+      Exura.guard(record.effect);
     } finally {
       record.running = false;
     }
@@ -185,7 +235,7 @@ class Exura {
         params[k] = match[i + 1];
       });
 
-      fn(params);
+      Exura.guard(fn, params);
     }
   }
 
@@ -197,7 +247,7 @@ class Exura {
     const observer = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          fn(entry);
+          Exura.guard(fn, entry);
           if (once) {
             observer.unobserve(entry.target); // stop after the first hit when once is true
           }
@@ -218,4 +268,24 @@ class Exura {
 
 
 
+}
+
+
+// production: an uncaught error or rejected promise never reaches the console
+window.addEventListener('error', (event) => {
+  if (!Exura.production()) return;
+  event.preventDefault();
+  Exura.report(event.error || event.message);
+});
+window.addEventListener('unhandledrejection', (event) => {
+  if (!Exura.production()) return;
+  event.preventDefault();
+  Exura.report(event.reason);
+});
+
+// development: the banner shows once the page is parsed, even when nothing else was noted
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => Exura.notice('debug'));
+} else {
+  setTimeout(() => Exura.notice('debug'));
 }

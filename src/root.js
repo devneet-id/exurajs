@@ -6,11 +6,15 @@
  * */
 class ExuraEnvironment {
 
+  // rebased by Exura.configure(); mode: 'development' (default) | 'production'
   static configure = new Map([
     ['version', '{{ VERSION }}'],
-    ['mode', 'production'],
+    ['mode', 'development'],
     ['url', `${window.location.protocol}//${window.location.host}/`],
+    ['onError', null],
   ]);
+
+  static banner = false;
 
   static module = new Map();
 
